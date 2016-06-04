@@ -24,20 +24,20 @@ comments for a specific context. The RNN makes use of LSTM cells to help keep
 long term data dependencies, improving the performance of the model. For
 completeness I compared the training evaluation of the LSTM cell vs the GRU cell
 under the same conditions. Then I discuss the reactions that the generated
-comments got from the Reddit community and how to improve the model in order to give it
-more context and understanding of sentences.  \end{abstract}
+comments got from the Reddit community and how to improve the model in order to
+give it more context and understanding of sentences.  \end{abstract}
 
 \section{Introduction}
 Recurrent neural networks (RNN) have been used in a wide array of machine
 learning problems. They are known to be a generative model which is a
-particularly interesting property. Recently there have been various attemps to
+particularly interesting property. Recently there have been various attempts to
 increase the creativity of these models. These approaches are applied to
-generate a varied ammount of media like images, music or poems.
+generate a varied amount of media like images, music or poems.
 
 In this project I make use of the generative properties of the RNN to try to
-atomatize the generation of comments especific to a provided context. The
+automatize the generation of comments specific to a provided context. The
 applications of this are many: FAQ answering, forum like discussion, chatbots
-that help accomplish a task, gmail's autoreply feature.
+that help accomplish a task, gmail's auto-reply feature.
 
 The potential of this is huge, it can create be a whole new human computer
 interaction paradigm on how users deal with technology. If implemented correctly
@@ -45,10 +45,10 @@ people won't even be able to discern a bot from a human on the other side of the
 conversation (Turing test). This applies to any form of communication. Companies
 wouldn't need to spend as many resources to generate a valuable product or
 experience to their customers, think of customer service and internal processes,
-even increase the usefulnes and intelligence of their current products.
+even increase the usefulness and intelligence of their current products.
 
 The approach to solve this problem was to use already proved RNN language
-models. I used the help of LSTMs to help alleviate the long term data dependecy
+models. I used the help of LSTMs to help alleviate the long term data dependency
 loss issue, this practice improved the performance of the model. In order to have
 a baseline I also experimented with a GRU which in practical terms it is a
 modified LSTM with different keep and forget functions and internal mechanisms
@@ -80,7 +80,7 @@ graphic representation in figure~\ref{fig:rnndiagram}.
 
 %TODO: ADD REFERENCE TO ZAREMBA.
 Let's start defining the equations for the LSTM cells. (Zaremba el al. 2014)
-The memory cell $c_t$ contains the information of a unit. The gates controll how
+The memory cell $c_t$ contains the information of a unit. The gates control how
 much of that information should be memorized or forgotten to be sent to the next
 step.
 \begin{equation}
@@ -90,7 +90,7 @@ where
 \begin{equation}
 \widetilde{c}_t = \tanh{(W_c x_t + U_c h_{t-1})}
 \end{equation}
-Input $i_t$ and forget $f_t$ gates are calculated from previuos hidden states.
+Input $i_t$ and forget $f_t$ gates are calculated from previous hidden states.
 $h_{t-1}$
 \begin{equation}
 i_t = \sigma{(W_i x_t + U_i h_{t-1})}
@@ -128,7 +128,7 @@ surprised is the model of comparing the results it created with a validation
 dataset. To obtain perplexity we must first calculate \textit{loss}. Loss allows
 the model to determine how far away from the correct result is its
 prediction, generally speaking the less the distance the better. The model
-optimizes for minimizing this loss. Note that optimizing to much can cause
+optimizes for minimizing this loss. Note that optimizing too much can cause
 \textit{overfitting}, making our model incapable of generalize its guesses.
 
 \begin{equation}
@@ -144,7 +144,7 @@ Then perplexity is defined as:
 
 \section{Experiment}
 The dataset used in the experiment was 31 GB of an entire month's of reddit
-comments. It has comment's metadata such as: score, subreddit, body and author.
+comments. It has comments metadata such as: score, subreddit, body and author.
 I sectioned it to use a single subreddit (theme/topic). I decided to use the
 ``funny'' subreddit, which is one of the most popular subreddits. This subset
 arrived to 450 MB of comments. Then to bias the model towards better quality
@@ -165,9 +165,9 @@ original body file size correspondingly.
 
 With the dataset ready I proceeded to train two models. One with LSTM and one
 with GRU cells. This helped me compare the two models and choose the one that
-performed the beter based solely on perplexity. I used two set of hyperparameter
-configuration to train the models. You can see the hyperparameter sets used in
-Table~\ref{table:hyperparameters}.
+performed the better based solely on perplexity. I used two set of
+hyperparameter configuration to train the models. You can see the
+hyperparameter sets used in Table~\ref{table:hyperparameters}.
 
 \begin{table}[h]
 \caption{Used hyperparameter configurations for testing.}
@@ -182,7 +182,7 @@ embed\_size         &50         &50 \\
 hidden\_size        &100        &200 \\
 num\_steps          &10         &20 \\
 max\_epochs         &16         &26 \\
-early\_stoping      &2          &2 \\
+early\_stopping     &2          &2 \\
 dropout             &0.5        &0.5 \\
 learning\_rate      &0.001      &0.001 \\
 num\_layers         &2          &2 \\
@@ -207,7 +207,7 @@ GRU cells at the given task with the same parameters. Given that conclusion I
 decided to use the LSTM model's to generate test sentences.
 
 To distribute the comments generated by my RNN I created a Reddit account called
-Roy\_Nexus. I deliberatelly avoided to give any clear indication that this was
+Roy\_Nexus. I deliberately avoided to give any clear indication that this was
 a bot, just to see people's reactions to it.
 
 The bot worked as follows: It retrieved the top result of the feed ``rising''
@@ -282,7 +282,7 @@ I also think that the perplexity metric can be improved by first using more
 data to train the model, second giving it more time to train and third
 increasing the size of the hidden layer (as experiments concluded).
 
-For furter extensions it would be illustrative to use a Gated Feedback RNN (GF-RNN),
+For further extensions it would be illustrative to use a Gated Feedback RNN (GF-RNN),
 this model had shown to be superior to the basic stacked RNN-LSTM, RNN-GRU
 models in previous experiments and are promising. Is also interesting to mix
 different models to aid in the problem of context and sentence understanding.
