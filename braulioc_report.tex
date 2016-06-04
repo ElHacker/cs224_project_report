@@ -54,32 +54,89 @@ loss issue, this practice improved the performance of the mode. In order to have
 a baseline I also experimented with a GRU which in practical terms it is a
 modified LSTM with different keep and forget functions and internal mechanisms
 which I'll describe later. Once these two models were trained I evaluated them
-with perplexity. You can think of perplexity as a measure of how perplex or
-surprised is the model of comparing the results it created with a validation
-dataset.
-
-%TODO: ADD PERPLEXITY FORMULA
-
+with perplexity.
 
 \section{Background/Related Work}
-RNNs, LSTMs, GRU
+
 
 \section{Approach}
 After some experimentation (described in the next section) with different
 hyperparameter configurations, and by comparing the use of LSTM and GRU cells. I
 arrived to the following language model used for comment generation. The model
-is a two hidden layer RNN with LSTM cells to help with the long term data
-dependency loss problem. Each hidden layer has 200 nodes. You can see a graphic
-representation in figure NN.
+is a stacked RNN with two hidden layer LSTM cells to help with the long term
+data dependency loss problem. Each hidden layer has 200 nodes. You can see a
+graphic representation in figure~\ref{fig:rnndiagram}.
 
-%TODO: ADD MY MODEL'S FIGURE REPRESENTATION.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.4]{rnn_diagram}
+\caption{Stacked RNN.}
+\label{fig:rnndiagram}
+\end{figure}
 
-The model can be represented by the following equations:
+%TODO: ADD REFERENCE TO ZAREMBA.
+Let's start defining the equations for the LSTM cells. (Zaremba el al. 2014)
+The memory cell $c_t$ contains the information of a unit. The gates controll how
+much of that information should be memorized or forgotten to be sent to the next
+step.
+\begin{equation}
+c^j_t = f^j_t c^j_{t-1} + i^j_t \widetilde{c}^j_t
+\end{equation}
+where
+\begin{equation}
+\widetilde{c}_t = \tanh{(W_c x_t + U_c h_{t-1})}
+\end{equation}
+Input $i_t$ and forget $f_t$ gates are calculated from previuos hidden states.
+$h_{t-1}$
+\begin{equation}
+i_t = \sigma{(W_i x_t + U_i h_{t-1})}
+\end{equation}
+\begin{equation}
+f_t = \sigma{(W_f x_t + U_f h_{t-1})}
+\end{equation}
+$\sigma{(.)}$ is an element-wise logistic sigmoid function. $x_t$ is the input
+vector.
 
-%TODO: ADD MODELS EQUATIONS.
+When we have the result of the memory content. The hidden state $h^j_t$ of the
+$j$-th LSTM unit is calculated as:
+\begin{equation}
+h^j_t = o^j_t \tanh{(c^j_t)}
+\end{equation}
+The output gate $o_t$ controls how much memory is exposed:
+\begin{equation}
+o_t = \sigma{(W_o x_t + U_o h_{t-1})}
+\end{equation}
 
-The evaluation of the model was with a technical metric: perplexity, and by
-engagement metrics: users' replies and upvotes.
+LSTM cells help to memorize long term data dependencies.
+
+The model's prediction $\hat{y}_t$ is obtained by:
+\begin{equation}
+\hat{y}_t = \textrm{softmax} (h^2_t)
+\end{equation}
+Notice that \textit{softmax} is is being applied only to the topmost hidden
+layer on the stack.  In our rnn diagram (see figure~\ref{fig:rnndiagram}) $h^2_t
+= y^t$
+
+The evaluation of the model was done with a technical metric:
+\textit{perplexity}, and by engagement metrics: \textit{users' replies} and
+\textit{upvotes}. You can think of perplexity as a measure of how perplex or
+surprised is the model of comparing the results it created with a validation
+dataset. To obtain perplexity we must first calculate \textit{loss}. Loss allows
+the model to determine how far away from the correct result is its
+prediction, generally speaking the less the distance the better. The model
+optimizes for minimizing this loss. Note that optimizing to much can cause
+\textit{overfitting}, making our model incapable of generalize its guesses.
+
+\begin{equation}
+\textrm{loss} = -\frac{1}{N}\sum_{i=1}^{N} \ln{(\hat{y})}
+\end{equation}
+
+Then perplexity is defined as:
+
+\begin{equation}
+\textrm{perplexity} = e^{\textrm{loss}}
+\end{equation}
+
 
 \section{Experiment}
 The dataset used in the experiment was 31 GB of an entire month's of reddit
@@ -101,7 +158,6 @@ original body file size correspondingly.
 \caption{Dataset sectioning.}
 \label{fig:datasetsection}
 \end{figure}
-%TODO: Insert body dataset sectioninig grap for train, test and validation.
 
 With the dataset ready I proceeded to train two models. One with LSTM and one
 with GRU cells. This helped me compare the two models and choose the one that
@@ -203,8 +259,6 @@ experiment. On Table~\ref{table:engagement} you can see a summary of the number
 of comments, replies and final comment score the bot got when finished the
 experiment.
 
-%TODO: Insert table summarizing the number of comments, replies and final
-%comment score the bot obtained.
 \begin{table}[t]
 \caption{Engagement metrics.}
 \label{table:engagement}
@@ -237,10 +291,16 @@ different models to aid in the problem of context and sentence understanding.
 For example, integrating to a syntactic parser, that works by passing the input
 sentences to tag each word with a part-of-speech (POS) tag that describes the
 word's syntactic function, and determines the syntactic relationship between
-words in the sentence, represented by a tree (see figure NN). This will help to
-understand the input and output sentence of the RNN.
+words in the sentence, represented by a tree (see figure~\ref{fig:parsetree}).
+This will help to understand the input and output sentence of the RNN.
 
-%TODO: insert parse tree
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.1]{parse_tree}
+\caption{Parse tree of the phrase: ``Alice saw Bob''}
+\label{fig:parsetree}
+\end{figure}
+
 
 \section{References}
 
